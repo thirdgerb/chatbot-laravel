@@ -1,0 +1,31 @@
+{
+    "name": "commune/chatbot-laravel",
+    "type": "library",
+    "description": "developing laravel package based on commune/chatbot",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "thirdgerb",
+            "email": "thirdgerb@gmail.com"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Commune\\Chatbot\\Laravel\\" : "src/"
+        }
+    },
+    "autoload-dev" : {
+        "psr-4" : {
+            "Commune\\Chatbot\\Laravel\\Demo\\" : "demo/",
+            "Commune\\Chatbot\\Laravel\\Test\\" : "tests/"
+        }
+    },
+    "require": {
+        "php":"~7.1",
+        "commune/chatbot": "dev-master",
+        "laravel/framework": "^5.7"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    }
+}
