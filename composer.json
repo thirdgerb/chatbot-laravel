@@ -21,11 +21,18 @@
         }
     },
     "require": {
-        "php":"~7.1",
+        "php":"~7.2",
         "commune/chatbot": "dev-master",
         "laravel/framework": "^5.7"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5"
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/Users/BrightRed/Develop/Code/Thirdgerb/Projects/Commune/chatbot"
+        }
+    ]
+
 }
