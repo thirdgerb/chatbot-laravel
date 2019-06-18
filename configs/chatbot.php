@@ -15,8 +15,7 @@ return [
         \Commune\Chatbot\App\Drivers\Demo\ExpHandlerServiceProvider::class,
     ],
     'conversationProviders' => [
-        \Commune\Chatbot\App\Drivers\Demo\CacheServiceProvider::class,
-        \Commune\Chatbot\App\Drivers\Demo\SessionServiceProvider::class,
+        \Commune\Chatbot\Laravel\Providers\LaravelDBServiceProvider::class,
     ],
     'chatbotPipes' =>
         [
@@ -29,14 +28,14 @@ return [
     'translation' =>
         [
             'loader' => 'php',
-            'resourcesPath' => __DIR__ . '/../../src/Chatbot/App/trans',
+            'resourcesPath' => resource_path('/lang/chatbot'),
             'defaultLocale' => 'zh',
             'cacheDir' => NULL,
         ],
     'logger' =>
         [
             'name' => 'chatbot',
-            'path' => __DIR__ . '/cache/tmp.log',
+            'path' => storage_path('/logs/chatbot.log'),
             'days' => 0,
             'level' => 'debug',
             'bubble' => true,
@@ -60,6 +59,7 @@ return [
         'maxBreakpointHistory' => 10,
         'maxRedirectTimes' => 20,
         'sessionExpireSeconds' => 3600,
+        'sessionCacheSeconds' => 60,
         'sessionPipes' => [
             \Commune\Chatbot\App\Commands\UserCommandsPipe::class,
             \Commune\Chatbot\App\Commands\AnalyserPipe::class,

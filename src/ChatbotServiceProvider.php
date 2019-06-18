@@ -11,6 +11,7 @@ namespace Commune\Chatbot\Laravel;
 
 use Commune\Chatbot\Laravel\Commands\Tinker;
 use Illuminate\Support\ServiceProvider;
+use Commune\Chatbot\App\Constants;
 
 class ChatbotServiceProvider extends ServiceProvider
 {
@@ -18,8 +19,8 @@ class ChatbotServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->bootCommands();
-        $this->publishConfigs();
-
+        $this->publishFiles();
+        $this->loadMigrationsFrom(__DIR__.'/../migrations');
     }
 
     public function register()
@@ -37,10 +38,11 @@ class ChatbotServiceProvider extends ServiceProvider
 
     }
 
-    protected function publishConfigs() : void
+    protected function publishFiles() : void
     {
         $this->publishes([
             __DIR__. '/../configs/chatbot.php' => config_path('chatbot.php'),
+            Constants::TRANS_PATH => resource_path('lang/chatbot'),
         ]);
     }
 }
