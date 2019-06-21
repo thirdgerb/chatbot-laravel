@@ -45,11 +45,6 @@ class Tinker extends Command
         $app = $this->getLaravel();
         $config = $app['config']['chatbot'];
 
-        $config['reactorProviders'] = [
-            \Commune\Chatbot\App\Drivers\Demo\ExpHandlerServiceProvider::class,
-        ];
-
-
         $this->chatApp = new ChatApp($config, new IlluminateAdapter($app));
         $this->chatApp
             ->getReactorContainer()
