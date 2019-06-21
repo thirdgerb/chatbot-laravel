@@ -43,7 +43,7 @@ class Tinker extends Command
     protected function bootstrap() : void
     {
         $app = $this->getLaravel();
-        $config = $app['config']['chatbot'];
+        $config = $app['config']['commune']['chatbot'];
 
         $this->chatApp = new ChatApp($config, new IlluminateAdapter($app));
         $this->chatApp

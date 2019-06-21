@@ -41,7 +41,7 @@ class ChatbotServiceProvider extends ServiceProvider
     protected function publishFiles() : void
     {
         $this->publishes([
-            __DIR__. '/../configs/chatbot.php' => config_path('chatbot.php'),
+            __DIR__. '/../configs/chatbot.php' => config_path('commune/chatbot.php'),
             Constants::TRANS_PATH => resource_path('lang/chatbot'),
         ]);
     }
