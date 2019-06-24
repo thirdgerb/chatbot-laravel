@@ -248,12 +248,12 @@ class LaravelSessionDriver implements SessionDriver
             return null;
         }
 
-        $sessionData = unserialize($data['content']);
+        $sessionData = unserialize($data->content);
 
         if ($sessionData instanceof Breakpoint) {
             $this->cache->set(
                 $cacheKey,
-                $data['content'],
+                $data->content,
                 $this->hostConfig->sessionExpireSeconds
             );
             return $sessionData;
