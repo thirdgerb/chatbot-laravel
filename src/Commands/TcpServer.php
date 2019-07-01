@@ -3,30 +3,35 @@
 /**
  * Class Tinker
  * @package Commune\Chatbot\Laravel\Commands
+ * @author BrightRed
  */
 
 namespace Commune\Chatbot\Laravel\Commands;
 
 
+use Commune\Chatbot\Blueprint\Application as Chatbot;
 use Commune\Chatbot\Contracts\ChatServer;
-use Commune\Chatbot\Framework\ChatApp as Chatbot;
 use Commune\Chatbot\Framework\ChatApp;
-use Commune\Chatbot\Laravel\Commands\Tinker\Server;
 use Commune\Container\IlluminateAdapter;
 use Illuminate\Console\Command;
+use Commune\Chatbot\App\Platform\SwooleConsole\SwooleConsoleServer;
 
-class Tinker extends Command
+class TcpServer extends Command
 {
-    protected $signature = 'commune:tinker';
 
-    protected $description = 'start commune chatbot on laravel command';
+    protected $signature = 'commune:tcp';
+
+    protected $description = 'start commune chatbot server on tcp by swoole';
 
     /**
      * @var Chatbot
      */
     protected $chatApp;
 
-
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     public function handle()
     {
@@ -42,11 +47,10 @@ class Tinker extends Command
         $this->chatApp = new ChatApp($config, new IlluminateAdapter($app));
         $this->chatApp
             ->getReactorContainer()
-            ->instance(
+            ->singleton(
                 ChatServer::class,
-                new Server($this, $this->chatApp)
+                SwooleConsoleServer::class
             );
     }
-
 
 }

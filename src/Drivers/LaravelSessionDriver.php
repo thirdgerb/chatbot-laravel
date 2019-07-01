@@ -133,12 +133,17 @@ class LaravelSessionDriver implements SessionDriver
 
     public function saveYielding(Session $session, Yielding $yielding): void
     {
-        return;
+        $this->saveSessionData($session, $yielding);
     }
 
     public function findYielding(string $contextId): ? Yielding
     {
-        return null;
+        $data = $this->findSessionData(
+            $contextId,
+            SessionData::YIELDING_TYPE
+        );
+
+        return $data instanceof Yielding ? $data : null;
     }
 
     public function saveBreakpoint(Session $session, Breakpoint $breakpoint): void

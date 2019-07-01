@@ -9,6 +9,7 @@
 namespace Commune\Chatbot\Laravel;
 
 
+use Commune\Chatbot\Laravel\Commands\TcpServer;
 use Commune\Chatbot\Laravel\Commands\Tinker;
 use Illuminate\Support\ServiceProvider;
 use Commune\Chatbot\App\Constants;
@@ -32,6 +33,7 @@ class ChatbotServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
+                TcpServer::class,
                 Tinker::class,
             ]);
         }
