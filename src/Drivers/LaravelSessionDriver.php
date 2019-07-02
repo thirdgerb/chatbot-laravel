@@ -82,10 +82,6 @@ class LaravelSessionDriver implements SessionDriver
             return $this->db;
         }
         $this->db = DB::connection();
-        DB::listen(function($query) {
-            $this->logger->debug('sql: ' . $query->sql);
-
-        });
         return $this->db;
     }
 
@@ -292,5 +288,12 @@ class LaravelSessionDriver implements SessionDriver
         return $data instanceof Context ? $data : null;
     }
 
+
+    public function __destruct()
+    {
+        if (CHATBOT_DEBUG) {
+            $this->logger->debug(__METHOD__);
+        }
+    }
 
 }

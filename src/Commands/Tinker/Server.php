@@ -44,6 +44,7 @@ class Server implements ChatServer
         $config = $this->chatApp
             ->getReactorContainer()[ConsoleConfig::class];
 
+        $kernel = $this->chatApp->getKernel();
         while (true) {
             $answer = $this->command->ask('请输入');
             $request = new Request(
@@ -51,7 +52,7 @@ class Server implements ChatServer
                 (string)$answer,
                 $config
             );
-            $this->chatApp->getKernel()->onUserMessage($request);
+            $kernel->onUserMessage($request);
         }
     }
 

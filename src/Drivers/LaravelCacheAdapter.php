@@ -8,10 +8,12 @@
 
 namespace Commune\Chatbot\Laravel\Drivers;
 
+use Commune\Chatbot\Blueprint\Conversation\ConversationLogger;
 use Commune\Chatbot\Contracts\CacheAdapter;
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Support\Facades\Redis;
 use Predis\Client;
+use Psr\Log\LoggerInterface;
 
 class LaravelCacheAdapter implements CacheAdapter
 {
@@ -19,6 +21,20 @@ class LaravelCacheAdapter implements CacheAdapter
      * @var \Illuminate\Redis\Connections\Connection
      */
     protected $connection;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * LaravelCacheAdapter constructor.
+     * @param LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
 
     /**
      * @return Client
@@ -66,5 +82,11 @@ class LaravelCacheAdapter implements CacheAdapter
         return $this->getRedis()->del($key) > 0;
     }
 
+    public function __destruct()
+    {
+        if (CHATBOT_DEBUG) {
+            $this->logger->debug(__METHOD__);
+        }
+    }
 
 }
