@@ -15,13 +15,14 @@ use Commune\Chatbot\Blueprint\Conversation\ConversationMessage;
 use Commune\Chatbot\Blueprint\Conversation\MessageRequest;
 use Commune\Chatbot\Blueprint\Message\Message;
 use Commune\Chatbot\Blueprint\Message\VerboseMsg;
+use Commune\Chatbot\Framework\Conversation\MessageRequestHelper;
 use Commune\Support\Uuid\HasIdGenerator;
 use Commune\Support\Uuid\IdGeneratorHelper;
 use Illuminate\Console\Command;
 
 class Request implements MessageRequest, HasIdGenerator
 {
-    use IdGeneratorHelper;
+    use IdGeneratorHelper, MessageRequestHelper;
 
     /**
      * @var Command
@@ -145,11 +146,7 @@ class Request implements MessageRequest, HasIdGenerator
                 $this->command->info($text);
             }
         }
+        $this->buffer = [];
     }
-
-    public function finishRequest(): void
-    {
-    }
-
 
 }
