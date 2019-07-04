@@ -12,6 +12,7 @@ use Commune\Chatbot\App\Platform\ConsoleConfig;
 use Commune\Chatbot\Blueprint\Application;
 use Commune\Chatbot\Blueprint\Conversation\Conversation;
 use Commune\Chatbot\Contracts\ChatServer;
+use Commune\Chatbot\Framework\Messages\Events\ConnectionEvt;
 use Illuminate\Console\Command;
 
 class Server implements ChatServer
@@ -45,6 +46,13 @@ class Server implements ChatServer
             ->getReactorContainer()[ConsoleConfig::class];
 
         $kernel = $this->chatApp->getKernel();
+        $kernel->onUserMessage(
+            new Request(
+                $this->command,
+                new ConnectionEvt(),
+                $config
+            )
+        );
         while (true) {
             $answer = $this->command->ask('请输入');
             $request = new Request(

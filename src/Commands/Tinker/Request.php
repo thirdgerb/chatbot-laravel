@@ -29,7 +29,7 @@ class Request implements MessageRequest, HasIdGenerator
     protected $command;
 
     /**
-     * @var string
+     * @var string|Message
      */
     protected $text;
 
@@ -56,10 +56,10 @@ class Request implements MessageRequest, HasIdGenerator
     /**
      * Request constructor.
      * @param Command $command
-     * @param string $text
+     * @param string|Message $text
      * @param ConsoleConfig $config
      */
-    public function __construct(Command $command, string $text, ConsoleConfig $config)
+    public function __construct(Command $command, $text, ConsoleConfig $config)
     {
         $this->command = $command;
         $this->text = $text;
@@ -84,6 +84,9 @@ class Request implements MessageRequest, HasIdGenerator
 
     public function fetchMessage(): Message
     {
+        if ($this->text instanceof Message) {
+            return $this->text;
+        }
         return $this->message
             ?? $this->message = new Text($this->text);
 
