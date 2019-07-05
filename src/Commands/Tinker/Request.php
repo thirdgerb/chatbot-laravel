@@ -119,7 +119,7 @@ class Request implements MessageRequest, HasIdGenerator
         return [];
     }
 
-    public function bufferMessageToChat(ConversationMessage $message): void
+    public function bufferConversationMessage(ConversationMessage $message): void
     {
         $this->buffer[] = $message;
     }
@@ -128,7 +128,7 @@ class Request implements MessageRequest, HasIdGenerator
     {
         foreach ($this->buffer as $message) {
             $msg = $message->getMessage();
-            $text = $msg->getText();
+            $text = $msg->getText().PHP_EOL;
 
             if ($msg instanceof VerboseMsg) {
                 switch($msg->getLevel()) {

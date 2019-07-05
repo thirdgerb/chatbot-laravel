@@ -9,9 +9,10 @@
 namespace Commune\Chatbot\Laravel\Drivers;
 
 
+use Commune\Chatbot\Blueprint\Conversation\ConversationLogger;
 use Commune\Chatbot\Config\Host\OOHostConfig;
-use Commune\Chatbot\Contracts\CacheAdapter;
 use Commune\Chatbot\Contracts\EventDispatcher;
+use Commune\Chatbot\Framework\Conversation\RunningSpyTrait;
 use Commune\Chatbot\Laravel\Database\TableSchema;
 use Commune\Chatbot\Laravel\Events\CreateSessionData;
 use Commune\Chatbot\Laravel\Events\UpdateSessionData;
@@ -22,20 +23,15 @@ use Commune\Chatbot\OOHost\Session\Driver as SessionDriver;
 use Commune\Chatbot\OOHost\Session\Session;
 use Commune\Chatbot\OOHost\Session\SessionData;
 use Illuminate\Database\ConnectionInterface;
-use Illuminate\Support\Facades\DB;
-use Psr\Log\LoggerInterface;
 
 class LaravelSessionDriver implements SessionDriver
 {
+    use RunningSpyTrait;
+
     /**
      * @var ConnectionInterface
      */
     protected $db;
-
-    /**
-     * @var CacheAdapter
-     */
-    protected $cache;
 
     /**
      * @var OOHostConfig
@@ -43,7 +39,7 @@ class LaravelSessionDriver implements SessionDriver
     protected $hostConfig;
 
     /**
-     * @var LoggerInterface
+     * @var ConversationLogger
      */
     protected $logger;
 
@@ -53,36 +49,52 @@ class LaravelSessionDriver implements SessionDriver
     protected $dispatcher;
 
     /**
+     * @var LaravelDBDriver
+     */
+    protected $driver;
+
+    /**
+     * @var string
+     */
+    protected $traceId;
+
+    /**
      * LaravelSessionDriver constructor.
-     * @param CacheAdapter $cache
+     * @param LaravelDBDriver $driver
      * @param OOHostConfig $hostConfig
-     * @param LoggerInterface $logger
+     * @param ConversationLogger $logger
      * @param EventDispatcher $dispatcher
      */
     public function __construct(
-        CacheAdapter $cache,
+        LaravelDBDriver $driver,
         OOHostConfig $hostConfig,
-        LoggerInterface $logger,
+        ConversationLogger $logger,
         EventDispatcher $dispatcher
     )
     {
-        $this->cache = $cache;
         $this->hostConfig = $hostConfig;
         $this->logger = $logger;
         $this->dispatcher = $dispatcher;
+        $this->driver = $driver;
+        $this->traceId = $driver->getTraceId();
+        self::addRunningTrace($this->traceId, $this->traceId);
     }
 
 
     /**
-     * @return ConnectionInterface
+     * @return \Illuminate\Database\Connection
      */
     protected function db()
     {
-        if (isset($this->db)) {
-            return $this->db;
-        }
-        $this->db = DB::connection();
-        return $this->db;
+        return $this->driver->getDB();
+    }
+
+    /**
+     * @return \Illuminate\Redis\Connections\Connection
+     */
+    protected function cache()
+    {
+        return $this->driver->getRedis();
     }
 
     protected function tableName(string $type) : string
@@ -159,11 +171,14 @@ class LaravelSessionDriver implements SessionDriver
         $id = $sessionData->getSessionDataId();
         $type = $sessionData->getSessionDataType();
         $cacheKey = $this->cacheKey($id, $type);
+        $cache = $this->cache();
+
         $serialized = serialize($sessionData);
-        $this->cache->set(
+
+        $cache->setex(
             $cacheKey,
-            $serialized,
-            $this->hostConfig->sessionExpireSeconds
+            $this->hostConfig->sessionExpireSeconds,
+            $serialized
         );
 
         $table = $this->tableName($type);
@@ -220,9 +235,10 @@ class LaravelSessionDriver implements SessionDriver
     public function findSessionData(string $id, string $dataType = '') : ? SessionData
     {
         $cacheKey = $this->cacheKey($id, $dataType);
-        $value = $this->cache->get($cacheKey);
+        $cache = $this->cache();
+        $value = $cache->get($cacheKey);
 
-        if (is_string($value)) {
+        if (!empty($value) && is_string($value)) {
             $object = unserialize($value);
             if ($object instanceof SessionData) {
                 return $object;
@@ -252,10 +268,10 @@ class LaravelSessionDriver implements SessionDriver
         $sessionData = unserialize($data->content);
 
         if ($sessionData instanceof Breakpoint) {
-            $this->cache->set(
+            $cache->set(
                 $cacheKey,
-                $data->content,
-                $this->hostConfig->sessionExpireSeconds
+                $this->hostConfig->sessionExpireSeconds,
+                $data->content
             );
             return $sessionData;
         }
@@ -291,9 +307,7 @@ class LaravelSessionDriver implements SessionDriver
 
     public function __destruct()
     {
-        if (CHATBOT_DEBUG) {
-            $this->logger->debug(__METHOD__);
-        }
+        self::removeRunningTrace($this->traceId);
     }
 
 }
