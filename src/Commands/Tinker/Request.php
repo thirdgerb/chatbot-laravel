@@ -12,17 +12,13 @@ namespace Commune\Chatbot\Laravel\Commands\Tinker;
 use Commune\Chatbot\App\Messages\Text;
 use Commune\Chatbot\App\Platform\ConsoleConfig;
 use Commune\Chatbot\Blueprint\Conversation\ConversationMessage;
-use Commune\Chatbot\Blueprint\Conversation\MessageRequest;
 use Commune\Chatbot\Blueprint\Message\Message;
 use Commune\Chatbot\Blueprint\Message\VerboseMsg;
-use Commune\Chatbot\Framework\Conversation\MessageRequestHelper;
-use Commune\Support\Uuid\HasIdGenerator;
-use Commune\Support\Uuid\IdGeneratorHelper;
+use Commune\Chatbot\Laravel\Drivers\LaravelMessageRequest;
 use Illuminate\Console\Command;
 
-class Request implements MessageRequest, HasIdGenerator
+class Request extends LaravelMessageRequest
 {
-    use IdGeneratorHelper, MessageRequestHelper;
 
     /**
      * @var Command
@@ -30,29 +26,9 @@ class Request implements MessageRequest, HasIdGenerator
     protected $command;
 
     /**
-     * @var string|Message
-     */
-    protected $text;
-
-    /**
      * @var ConsoleConfig
      */
     protected $config;
-
-    /**
-     * @var Message
-     */
-    protected $message;
-
-    /**
-     * @var string
-     */
-    protected $messageId;
-
-    /**
-     * @var ConversationMessage[]
-     */
-    protected $buffer = [];
 
     /**
      * Request constructor.
@@ -63,14 +39,8 @@ class Request implements MessageRequest, HasIdGenerator
     public function __construct(Command $command, $text, ConsoleConfig $config)
     {
         $this->command = $command;
-        $this->text = $text;
         $this->config = $config;
-    }
-
-
-    public function generateMessageId(): string
-    {
-        return $this->createUuId();
+        parent::__construct($text);
     }
 
     public function getChatbotUserId(): string
@@ -83,25 +53,9 @@ class Request implements MessageRequest, HasIdGenerator
         return Server::class;
     }
 
-    public function fetchMessage(): Message
+    protected function makeInputMessage(): Message
     {
-        if ($this->text instanceof Message) {
-            return $this->text;
-        }
-        return $this->message
-            ?? $this->message = new Text($this->text);
-
-    }
-
-    public function fetchMessageId(): string
-    {
-        return $this->messageId
-            ?? $this->messageId = $this->generateMessageId();
-    }
-
-    public function fetchTraceId(): string
-    {
-        return $this->fetchMessageId();
+        return new Text($this->input);
     }
 
     public function fetchUserId(): string
@@ -119,14 +73,12 @@ class Request implements MessageRequest, HasIdGenerator
         return [];
     }
 
-    public function bufferConversationMessage(ConversationMessage $message): void
+    /**
+     * @param ConversationMessage[] $buffer
+     */
+    public function renderChatMessages(array $buffer): void
     {
-        $this->buffer[] = $message;
-    }
-
-    public function flushChatMessages(): void
-    {
-        foreach ($this->buffer as $message) {
+        foreach ($buffer as $message) {
             $msg = $message->getMessage();
             $text = $msg->getText().PHP_EOL;
 
@@ -146,7 +98,6 @@ class Request implements MessageRequest, HasIdGenerator
                 $this->command->info($text);
             }
         }
-        $this->buffer = [];
     }
 
 }
