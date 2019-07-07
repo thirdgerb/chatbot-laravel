@@ -147,11 +147,13 @@ abstract class LaravelMessageRequest implements MessageRequest, HasIdGenerator
             /**
              * @var ClientInterface $pipe
              */
+            $values = [];
             foreach ($messages as $message) {
                 $key = $this->userMessageKey($message->getUserId());
-                $id = $message->getId();
-                $value = serialize($message);
-                $pipe->hset($key, $id, $value);
+                $values[$key][] = serialize($message);
+            }
+            foreach ($values as $key => $send) {
+                $pipe->lpush($key, $send);
             }
         });
     }
@@ -166,7 +168,7 @@ abstract class LaravelMessageRequest implements MessageRequest, HasIdGenerator
             /**
              * @var Pipeline $pipe
              */
-            $pipe->hgetall($key);
+            $pipe->lrange($key, 0, -1);
             $pipe->del([$key]);
         });
 
