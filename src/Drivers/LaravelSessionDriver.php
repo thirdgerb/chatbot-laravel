@@ -9,6 +9,7 @@
 namespace Commune\Chatbot\Laravel\Drivers;
 
 
+use Carbon\Carbon;
 use Commune\Chatbot\Blueprint\Conversation\ConversationLogger;
 use Commune\Chatbot\Config\Host\OOHostConfig;
 use Commune\Chatbot\Contracts\EventDispatcher;
@@ -196,6 +197,7 @@ class LaravelSessionDriver implements SessionDriver
             if ($table === TableSchema::SESSION_DATA_TABLE) {
                 $data['session_data_type'] = $type;
             }
+            $data['created_at'] = $data['updated_at'] = new Carbon();
 
             $result = $this->db()
                 ->table($table)
@@ -210,7 +212,8 @@ class LaravelSessionDriver implements SessionDriver
                 ->table($table)
                 ->where($idField, '=', $id)
                 ->update([
-                    'content' => $serialized
+                    'content' => $serialized,
+                    'updated_at' => new Carbon()
                 ]);
 
             $this->dispatcher->dispatch(new UpdateSessionData($sessionData, $session));
