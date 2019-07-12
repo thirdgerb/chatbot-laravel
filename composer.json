@@ -32,7 +32,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "/Users/BrightRed/Develop/Code/Thirdgerb/Projects/Commune/chatbot"
+            "url": "../chatbot"
         }
     ]
 
