@@ -3,8 +3,14 @@ developing
 
  [https://github.com/thirdgerb/chatbot](https://github.com/thirdgerb/chatbot) 库在laravel 里的基本实现, 使之在laravel可用. 现在只做了最简单的实现.
 
+依赖:
 
-安装方式:
+- swoole (可选)
+- predis
+- mysql
+- redis
+
+安装方式, 在laravel (~5.8) 项目中:
 
     composer require commune/chatbot-laravel:dev-master
 
@@ -15,4 +21,6 @@ developing
 
 运行 ``` artisan migrate ``` 创建chatbot 的数据表.
 
-运行 ``` artisan commune:chatbot {userId} {userName} ``` 可以运行测试用例.
+运行 ``` artisan commune:tinker ``` 可以运行命令行测试用例.
+
+运行 ``` artisan commune:tcp ``` 可以基于swoole 运行机器人的 tcp 服务.

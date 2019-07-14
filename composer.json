@@ -21,19 +21,12 @@
         }
     },
     "require": {
-        "php":"~7.2",
+        "php":"^7.2",
         "laravel/framework": "~5.8",
-        "commune/chatbot": "dev-develop",
+        "commune/chatbot": "dev-master",
         "predis/predis": "^1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5"
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../chatbot"
-        }
-    ]
-
+    }
 }
