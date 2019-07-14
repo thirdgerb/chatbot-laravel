@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Commune\Chatbot\Laravel\Database\FieldSchema;
+use Commune\Chatbot\Laravel\Database\TableSchema;
 
 class CreateChatbotContextsTable extends Migration
 {
@@ -14,14 +14,13 @@ class CreateChatbotContextsTable extends Migration
      */
     public function up()
     {
-        Schema::create('chatbot_contexts', function (Blueprint $table) {
+        Schema::create(TableSchema::CONTEXTS_TABLE, function (Blueprint $table) {
 
             $table->increments('id');
+            TableSchema::id('context_id', $table);
+            TableSchema::scope($table);
 
-            FieldSchema::contextId($table);
-
-            $table->binary('context_data');
-
+            $table->binary('content');
             $table->timestamps();
 
             $table->unique('context_id');
@@ -35,6 +34,6 @@ class CreateChatbotContextsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chatbot_contexts');
+        Schema::dropIfExists(TableSchema::CONTEXTS_TABLE);
     }
 }

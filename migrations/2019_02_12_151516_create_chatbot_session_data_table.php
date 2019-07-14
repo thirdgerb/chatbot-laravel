@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Commune\Chatbot\Laravel\Database\TableSchema;
 
-class CreateChatbotMessagesTable extends Migration
+class CreateChatbotSessionDataTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,18 +14,19 @@ class CreateChatbotMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('chatbot_messages', function (Blueprint $table) {
+        Schema::create(TableSchema::SESSION_DATA_TABLE, function (Blueprint $table) {
             $table->increments('id');
 
-            TableSchema::id('message_id', $table);
+            TableSchema::id('session_data_id', $table);
+            $table->string('session_data_type', 60)
+                ->comment('session data type')
+                ->default('');
+
             TableSchema::scope($table);
 
-            TableSchema::id('reply_to_id', $table);
             $table->binary('content');
 
             $table->timestamps();
-
-            $table->unique('message_id');
         });
     }
 
@@ -36,6 +37,6 @@ class CreateChatbotMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chatbot_messages');
+        Schema::dropIfExists(TableSchema::SESSION_DATA_TABLE);
     }
 }
