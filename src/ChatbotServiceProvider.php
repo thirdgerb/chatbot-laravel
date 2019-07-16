@@ -13,9 +13,12 @@ use Commune\Chatbot\Laravel\Commands\TcpServer;
 use Commune\Chatbot\Laravel\Commands\Tinker;
 use Illuminate\Support\ServiceProvider;
 use Commune\Chatbot\App\Constants;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
 
 class ChatbotServiceProvider extends ServiceProvider
 {
+    const MESSAGES_LOG = 'log.messages';
 
     public function boot()
     {
@@ -26,6 +29,22 @@ class ChatbotServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->app->singleton(
+            'log.messages',
+            static::messagesLogConcrete()
+        );
+    }
+
+    public static function messagesLogConcrete() : \Closure
+    {
+        return function(){
+            $handler = new RotatingFileHandler(
+                storage_path('logs/messages.log'),
+                7
+            );
+
+            return new Logger('messages', [$handler]);
+        };
     }
 
 
