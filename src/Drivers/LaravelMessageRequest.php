@@ -61,6 +61,11 @@ abstract class LaravelMessageRequest implements MessageRequest, HasIdGenerator
         $this->input = $input;
     }
 
+    public function getInput()
+    {
+        return $this->input;
+    }
+
     abstract protected function makeInputMessage() : Message;
 
     /**
