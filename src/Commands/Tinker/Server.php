@@ -41,9 +41,9 @@ class Server implements ChatServer
 
     public function run(): void
     {
-        $this->chatApp->bootReactor();
+        $this->chatApp->bootWorker();
         $config = $this->chatApp
-            ->getReactorContainer()[ConsoleConfig::class];
+            ->getProcessContainer()[ConsoleConfig::class];
 
         $kernel = $this->chatApp->getKernel();
         $kernel->onUserMessage(

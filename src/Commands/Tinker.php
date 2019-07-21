@@ -41,7 +41,7 @@ class Tinker extends Command
 
         $this->chatApp = new ChatApp($config, new IlluminateAdapter($app));
         $this->chatApp
-            ->getReactorContainer()
+            ->getProcessContainer()
             ->instance(
                 ChatServer::class,
                 new Server($this, $this->chatApp)

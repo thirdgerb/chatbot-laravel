@@ -46,7 +46,7 @@ class TcpServer extends Command
 
         $this->chatApp = new ChatApp($config, new IlluminateAdapter($app));
         $this->chatApp
-            ->getReactorContainer()
+            ->getProcessContainer()
             ->singleton(
                 ChatServer::class,
                 SwooleConsoleServer::class
